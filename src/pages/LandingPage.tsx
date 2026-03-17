@@ -29,9 +29,7 @@ const LandingPage = () => {
         </div>
         <div className="relative container mx-auto px-6 py-32 lg:py-44">
           <div className="max-w-2xl">
-            <h1 className="text-4xl lg:text-6xl font-serif font-semibold text-foreground tracking-tight leading-tight mb-6"
-                style={{ animationDelay: "0ms" }}
-                className="text-4xl lg:text-6xl font-serif font-semibold text-foreground tracking-tight leading-tight mb-6 animate-fade-in-up">
+            <h1 className="text-4xl lg:text-6xl font-serif font-semibold text-foreground tracking-tight leading-tight mb-6 animate-fade-in-up">
               Your hives are breathing.<br />
               <span className="text-primary">Here is the rhythm.</span>
             </h1>
