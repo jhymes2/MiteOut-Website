@@ -13,6 +13,11 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        serif: ["Fraunces", "serif"],
+        sans: ["IBM Plex Sans", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,33 +62,54 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        honey: {
+          50: "#FFF8E7",
+          100: "#FFEFC4",
+          200: "#FFE09E",
+          300: "#FFD078",
+          400: "#F5B041",
+          500: "#E67E22",
+          600: "#CA6C1A",
+          700: "#A85A15",
+        },
+        leaf: {
+          50: "#E8F8EF",
+          100: "#C3EDD4",
+          200: "#82D9A6",
+          300: "#4EC97E",
+          400: "#27AE60",
+          500: "#1E8A4C",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "calc(var(--radius) - 4px)",
+        sm: "calc(var(--radius) - 8px)",
+        outer: "var(--radius-outer)",
+        inner: "var(--radius-inner)",
+      },
+      boxShadow: {
+        soil: "var(--shadow-soil)",
+        card: "var(--shadow-card)",
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "fade-in-up": {
+          from: { opacity: "0", transform: "translateY(16px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in-up": "fade-in-up 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
       },
     },
   },
