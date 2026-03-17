@@ -153,11 +153,11 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
 
       if (uploadError) throw new Error(`Upload record error: ${uploadError.message}`);
 
-      // Parse data rows (skip header)
+      // Parse data rows starting from detected data start
       const readings: any[] = [];
       const timestamps = new Set<string>();
 
-      for (let i = 1; i < lines.length; i++) {
+      for (let i = dataStartIndex; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 7) continue;
 
