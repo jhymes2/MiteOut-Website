@@ -14,7 +14,143 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      hives: {
+        Row: {
+          created_at: string
+          hive_code: string | null
+          id: string
+          location_lat: number | null
+          location_lng: number | null
+          name: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hive_code?: string | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          name: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hive_code?: string | null
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          name?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      readings: {
+        Row: {
+          hive_id: string
+          humidity_pct: number | null
+          id: string
+          ina260_current_ma: number | null
+          ina260_power_mw: number | null
+          ina260_voltage_mv: number | null
+          temperature_c: number | null
+          thermistor_ext_f: number | null
+          thermistor2_f: number | null
+          thermistor3_f: number | null
+          timestamp: string
+          upload_id: string | null
+          weight_lbs: number | null
+        }
+        Insert: {
+          hive_id: string
+          humidity_pct?: number | null
+          id?: string
+          ina260_current_ma?: number | null
+          ina260_power_mw?: number | null
+          ina260_voltage_mv?: number | null
+          temperature_c?: number | null
+          thermistor_ext_f?: number | null
+          thermistor2_f?: number | null
+          thermistor3_f?: number | null
+          timestamp: string
+          upload_id?: string | null
+          weight_lbs?: number | null
+        }
+        Update: {
+          hive_id?: string
+          humidity_pct?: number | null
+          id?: string
+          ina260_current_ma?: number | null
+          ina260_power_mw?: number | null
+          ina260_voltage_mv?: number | null
+          temperature_c?: number | null
+          thermistor_ext_f?: number | null
+          thermistor2_f?: number | null
+          thermistor3_f?: number | null
+          timestamp?: string
+          upload_id?: string | null
+          weight_lbs?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "readings_hive_id_fkey"
+            columns: ["hive_id"]
+            isOneToOne: false
+            referencedRelation: "hives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "readings_upload_id_fkey"
+            columns: ["upload_id"]
+            isOneToOne: false
+            referencedRelation: "uploads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      uploads: {
+        Row: {
+          created_at: string
+          file_path: string
+          filename: string
+          hive_id: string
+          id: string
+          rows_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_path: string
+          filename: string
+          hive_id: string
+          id?: string
+          rows_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_path?: string
+          filename?: string
+          hive_id?: string
+          id?: string
+          rows_count?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploads_hive_id_fkey"
+            columns: ["hive_id"]
+            isOneToOne: false
+            referencedRelation: "hives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
