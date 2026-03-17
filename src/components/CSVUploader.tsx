@@ -33,7 +33,7 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const stripSpaces = (s: string): string => s.replace(/\s+/g, "");
+  const stripSpaces = (s: string): string => s.replace(/[\s\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+/g, "");
 
   const cleanLine = (line: string): string => {
     // Remove surrounding quotes and strip internal spaces
