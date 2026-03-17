@@ -88,14 +88,34 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
         throw new Error("CSV file must contain at least a header and one data row.");
       }
 
-      // First line contains hive code
-      const firstLine = lines[0];
-      const hiveCode = firstLine.split("|")[0]?.trim() || firstLine.trim();
+      // Find hive code and data lines
+      // Lines can be: blank, header (contains "Month" or column description), hive code, then data
+      let hiveCode = "";
+      let dataStartIndex = 0;
+
+      for (let i = 0; i < lines.length; i++) {
+        const cleaned = cleanLine(lines[i]);
+        // Skip empty lines and header lines
+        if (!cleaned || cleaned.toLowerCase().includes("month") || cleaned.toLowerCase().includes("weight")) {
+          continue;
+        }
+        // First non-header, non-empty line without a pipe is the hive code
+        if (!cleaned.includes("|")) {
+          hiveCode = cleaned;
+          continue;
+        }
+        // First line with pipes is data start
+        dataStartIndex = i;
+        break;
+      }
+
+      if (!hiveCode) {
+        throw new Error("Could not find hive code in CSV file.");
+      }
 
       // Determine target hive
       let targetHiveId = hiveId;
       if (!targetHiveId) {
-        // Look up hive by code
         const { data: hives } = await supabase
           .from("hives")
           .select("id, name, hive_code")
