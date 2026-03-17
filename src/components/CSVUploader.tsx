@@ -33,12 +33,33 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const stripSpaces = (s: string): string => s.replace(/\s+/g, "");
+
+  const cleanLine = (line: string): string => {
+    // Remove surrounding quotes and strip internal spaces
+    let cleaned = line.trim();
+    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+      cleaned = cleaned.slice(1, -1);
+    }
+    return stripSpaces(cleaned);
+  };
+
   const parseCSVLine = (line: string): string[] => {
-    return line.split("|").map((s) => s.trim());
+    const cleaned = cleanLine(line);
+    // Split by pipe, then split comma-separated fields (temp,humidity)
+    const pipeParts = cleaned.split("|");
+    const result: string[] = [];
+    for (const part of pipeParts) {
+      if (part.includes(",")) {
+        result.push(...part.split(","));
+      } else {
+        result.push(part);
+      }
+    }
+    return result;
   };
 
   const parseTimestamp = (raw: string): Date | null => {
-    // Format: Month.Day.Hour.Minute.Second
     const parts = raw.split(".");
     if (parts.length !== 5) return null;
     const [month, day, hour, minute, second] = parts.map(Number);
@@ -67,14 +88,34 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
         throw new Error("CSV file must contain at least a header and one data row.");
       }
 
-      // First line contains hive code
-      const firstLine = lines[0];
-      const hiveCode = firstLine.split("|")[0]?.trim() || firstLine.trim();
+      // Find hive code and data lines
+      // Lines can be: blank, header (contains "Month" or column description), hive code, then data
+      let hiveCode = "";
+      let dataStartIndex = 0;
+
+      for (let i = 0; i < lines.length; i++) {
+        const cleaned = cleanLine(lines[i]);
+        // Skip empty lines and header lines
+        if (!cleaned || cleaned.toLowerCase().includes("month") || cleaned.toLowerCase().includes("weight")) {
+          continue;
+        }
+        // First non-header, non-empty line without a pipe is the hive code
+        if (!cleaned.includes("|")) {
+          hiveCode = cleaned;
+          continue;
+        }
+        // First line with pipes is data start
+        dataStartIndex = i;
+        break;
+      }
+
+      if (!hiveCode) {
+        throw new Error("Could not find hive code in CSV file.");
+      }
 
       // Determine target hive
       let targetHiveId = hiveId;
       if (!targetHiveId) {
-        // Look up hive by code
         const { data: hives } = await supabase
           .from("hives")
           .select("id, name, hive_code")
@@ -112,11 +153,11 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
 
       if (uploadError) throw new Error(`Upload record error: ${uploadError.message}`);
 
-      // Parse data rows (skip header)
+      // Parse data rows starting from detected data start
       const readings: any[] = [];
       const timestamps = new Set<string>();
 
-      for (let i = 1; i < lines.length; i++) {
+      for (let i = dataStartIndex; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 7) continue;
 
