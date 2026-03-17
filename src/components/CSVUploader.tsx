@@ -33,12 +33,33 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const stripSpaces = (s: string): string => s.replace(/\s+/g, "");
+
+  const cleanLine = (line: string): string => {
+    // Remove surrounding quotes and strip internal spaces
+    let cleaned = line.trim();
+    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+      cleaned = cleaned.slice(1, -1);
+    }
+    return stripSpaces(cleaned);
+  };
+
   const parseCSVLine = (line: string): string[] => {
-    return line.split("|").map((s) => s.trim());
+    const cleaned = cleanLine(line);
+    // Split by pipe, then split comma-separated fields (temp,humidity)
+    const pipeParts = cleaned.split("|");
+    const result: string[] = [];
+    for (const part of pipeParts) {
+      if (part.includes(",")) {
+        result.push(...part.split(","));
+      } else {
+        result.push(part);
+      }
+    }
+    return result;
   };
 
   const parseTimestamp = (raw: string): Date | null => {
-    // Format: Month.Day.Hour.Minute.Second
     const parts = raw.split(".");
     if (parts.length !== 5) return null;
     const [month, day, hour, minute, second] = parts.map(Number);
