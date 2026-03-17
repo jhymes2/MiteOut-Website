@@ -157,12 +157,24 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
       const readings: any[] = [];
       const timestamps = new Set<string>();
 
+      console.log(`[CSV Debug] dataStartIndex=${dataStartIndex}, total lines=${lines.length}, hiveCode=${hiveCode}`);
+
       for (let i = dataStartIndex; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
-        if (cols.length < 7) continue;
+        if (i === dataStartIndex) {
+          console.log(`[CSV Debug] First data line raw: "${lines[i]}"`);
+          console.log(`[CSV Debug] First data line cols (${cols.length}):`, cols);
+        }
+        if (cols.length < 7) {
+          if (i === dataStartIndex) console.log(`[CSV Debug] Skipped line ${i}: cols.length=${cols.length} < 7`);
+          continue;
+        }
 
         const ts = parseTimestamp(cols[0]);
-        if (!ts) continue;
+        if (!ts) {
+          if (i === dataStartIndex) console.log(`[CSV Debug] Skipped line ${i}: parseTimestamp failed for "${cols[0]}"`);
+          continue;
+        }
 
         const tsKey = ts.toISOString();
         if (timestamps.has(tsKey)) {
@@ -185,6 +197,8 @@ export const CSVUploader = ({ hiveId, hiveName, onUploadComplete }: { hiveId?: s
           thermistor3_f: cols[9] ? parseNumber(cols[9]) : null,
         });
       }
+
+      console.log(`[CSV Debug] Parsed ${readings.length} readings`);
 
       if (readings.length === 0) {
         throw new Error("No valid data rows found in the CSV file.");
