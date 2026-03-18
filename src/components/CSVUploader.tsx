@@ -50,9 +50,9 @@ export const CSVUploader = ({
   const cleanLine = (line: string): string => {
     // Remove surrounding quotes and strip internal spaces
     let cleaned = line.trim();
-    // if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-    //   cleaned = cleaned.slice(1, -1);
-    // }
+    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+      cleaned = cleaned.slice(1, -1);
+    }
     return stripSpaces(cleaned);
   };
 
