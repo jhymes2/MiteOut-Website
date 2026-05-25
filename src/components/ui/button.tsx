@@ -13,9 +13,9 @@ const buttonVariants = cva(
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-black/5 text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-primary text-primary-foreground hover:bg-primary/85 shadow-soil text-base font-semibold px-8 py-3 h-auto rounded-outer",
+        hero: "bg-gradient-to-r from-[#FFB347] to-[#FFD700] text-[#5C3500] hover:from-[#FFA030] hover:to-[#FFC700] shadow-amber text-base font-semibold px-8 py-3 h-auto rounded-outer",
         glass: "glass-card text-foreground hover:bg-white/80 border border-border",
       },
       size: {

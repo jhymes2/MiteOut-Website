@@ -314,68 +314,83 @@ export const CSVUploader = ({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5 text-primary" />
-          Upload CSV Data
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-base font-semibold">
+          <Upload className="h-4 w-4 text-primary" />
+          Sync hive data
           {hiveName && (
-            <span className="text-muted-foreground font-normal text-sm">
-              — {hiveName}
-            </span>
+            <span className="text-muted-foreground font-normal text-sm">— {hiveName}</span>
           )}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div
-          className={`relative border-2 border-dashed rounded-inner p-10 text-center transition-colors brand-curve ${
-            dragActive
-              ? "border-primary bg-primary/5"
-              : "border-border hover:border-primary/40"
-          }`}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragActive(true);
-          }}
-          onDragLeave={() => setDragActive(false)}
-          onDrop={handleDrop}
-        >
-          {uploading ? (
-            <div className="text-muted-foreground">
-              <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-3" />
-              Processing CSV...
-            </div>
-          ) : (
-            <>
-              <FileText className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-              <p className="text-muted-foreground mb-2">
-                Drop your CSV file here
-              </p>
-              <p className="text-xs text-muted-foreground/60 mb-4">
-                or click to browse
-              </p>
-              <input
-                type="file"
-                accept=".csv"
-                onChange={handleFileSelect}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
-            </>
-          )}
+        <div className="grid md:grid-cols-[1fr_auto] gap-4 items-start">
+          {/* Drop zone */}
+          <div
+            className={`relative border-2 border-dashed rounded-inner p-12 text-center transition-all duration-200 brand-curve ${
+              dragActive
+                ? "border-primary bg-primary/8 shadow-amber"
+                : "border-border/60 hover:border-primary/50 hover:bg-primary/4"
+            }`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragActive(true);
+            }}
+            onDragLeave={() => setDragActive(false)}
+            onDrop={handleDrop}
+          >
+            {uploading ? (
+              <div className="text-muted-foreground">
+                <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-3" />
+                <p className="text-sm">Processing CSV...</p>
+              </div>
+            ) : (
+              <>
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
+                  <FileText className="h-6 w-6 text-primary/60" />
+                </div>
+                <p className="font-serif font-bold text-lg mb-1">Drop your hive CSV here</p>
+                <p className="text-xs text-muted-foreground mb-5">or click to browse your local files</p>
+                <Button variant="hero" size="sm" className="text-sm px-5 py-2 h-auto rounded-xl pointer-events-none">
+                  Browse files
+                </Button>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileSelect}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              </>
+            )}
+          </div>
+
+          {/* Requirements panel */}
+          <div className="tonal-well px-5 py-4 min-w-[200px] space-y-3">
+            <p className="font-mono text-[11px] text-primary/70 uppercase tracking-widest font-semibold">Required format</p>
+            <ul className="space-y-2">
+              {[
+                "Header row with hive_id, temp, weight, humidity",
+                "Dates as ISO-8601 (YYYY-MM-DD)",
+                "UTF-8 encoding",
+              ].map((req) => (
+                <li key={req} className="flex items-start gap-2">
+                  <CheckCircle className="h-3.5 w-3.5 text-secondary mt-0.5 shrink-0" />
+                  <span className="text-xs text-muted-foreground leading-snug">{req}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {result && (
           <div className="mt-4 p-4 rounded-inner bg-secondary/10 border border-secondary/20 flex items-start gap-3">
             <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
             <div>
-              <p className="font-medium text-sm">
-                {result.readingsCount} readings processed
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {result.filename} → {result.hiveCode}
-              </p>
+              <p className="font-semibold text-sm">{result.readingsCount} readings processed</p>
+              <p className="data-value text-xs text-muted-foreground">{result.filename} → {result.hiveCode}</p>
             </div>
-            <button onClick={() => setResult(null)} className="ml-auto">
-              <X className="h-4 w-4 text-muted-foreground" />
+            <button onClick={() => setResult(null)} className="ml-auto hover:text-foreground text-muted-foreground transition-colors">
+              <X className="h-4 w-4" />
             </button>
           </div>
         )}
@@ -384,13 +399,11 @@ export const CSVUploader = ({
           <div className="mt-4 p-4 rounded-inner bg-destructive/10 border border-destructive/20 flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
             <div>
-              <p className="font-medium text-sm text-destructive">
-                Upload Error
-              </p>
+              <p className="font-semibold text-sm text-destructive">Upload failed</p>
               <p className="text-xs text-muted-foreground">{error}</p>
             </div>
-            <button onClick={() => setError(null)} className="ml-auto">
-              <X className="h-4 w-4 text-muted-foreground" />
+            <button onClick={() => setError(null)} className="ml-auto hover:text-foreground text-muted-foreground transition-colors">
+              <X className="h-4 w-4" />
             </button>
           </div>
         )}

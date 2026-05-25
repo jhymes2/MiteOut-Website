@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ["Fraunces", "serif"],
-        sans: ["IBM Plex Sans", "sans-serif"],
+        serif: ["Plus Jakarta Sans", "sans-serif"],
+        sans: ["Be Vietnam Pro", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -91,6 +91,7 @@ export default {
       boxShadow: {
         soil: "var(--shadow-soil)",
         card: "var(--shadow-card)",
+        amber: "var(--shadow-amber)",
       },
       keyframes: {
         "accordion-down": {

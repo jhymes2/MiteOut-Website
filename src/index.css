@@ -4,64 +4,77 @@
 
 @layer base {
   :root {
-    --background: 48 40% 98%;
-    --foreground: 45 15% 15%;
+    /* Cream canvas — #fefccf */
+    --background: 57 89% 90%;
+    --foreground: 60 81% 6%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 45 15% 15%;
+    --card: 50 60% 96%;
+    --card-foreground: 60 81% 6%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 45 15% 15%;
+    --popover: 50 60% 96%;
+    --popover-foreground: 60 81% 6%;
 
-    --primary: 28 80% 52%;
-    --primary-foreground: 0 0% 100%;
+    /* Bright amber — #FFB347 */
+    --primary: 35 100% 64%;
+    --primary-foreground: 35 100% 14%;
 
-    --secondary: 145 63% 42%;
+    /* Botanical green — #3f6833 */
+    --secondary: 110 34% 30%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 40 15% 92%;
-    --muted-foreground: 40 10% 45%;
+    --muted: 50 40% 87%;
+    --muted-foreground: 35 18% 45%;
 
-    --accent: 48 95% 53%;
-    --accent-foreground: 45 15% 15%;
+    /* Amber gold — #FFBF00 */
+    --accent: 48 100% 50%;
+    --accent-foreground: 60 81% 6%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 40 15% 90%;
-    --input: 40 15% 88%;
-    --ring: 28 80% 52%;
+    --border: 40 22% 84%;
+    --input: 40 18% 86%;
+    --ring: 35 100% 64%;
 
     --radius: 1rem;
 
-    --sidebar-background: 48 30% 96%;
-    --sidebar-foreground: 45 15% 25%;
-    --sidebar-primary: 28 80% 52%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 20% 93%;
-    --sidebar-accent-foreground: 45 15% 15%;
-    --sidebar-border: 40 15% 90%;
-    --sidebar-ring: 28 80% 52%;
+    --sidebar-background: 50 45% 90%;
+    --sidebar-foreground: 35 18% 25%;
+    --sidebar-primary: 35 100% 64%;
+    --sidebar-primary-foreground: 35 100% 14%;
+    --sidebar-accent: 50 35% 86%;
+    --sidebar-accent-foreground: 60 81% 6%;
+    --sidebar-border: 40 22% 84%;
+    --sidebar-ring: 35 100% 64%;
 
-    /* Custom tokens */
-    --font-serif: 'Fraunces', serif;
-    --font-sans: 'IBM Plex Sans', sans-serif;
+    --font-serif: 'Plus Jakarta Sans', sans-serif;
+    --font-sans: 'Be Vietnam Pro', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     --radius-outer: 24px;
     --radius-inner: 16px;
-    --shadow-soil: 0 10px 30px -10px rgba(45, 42, 34, 0.1);
-    --shadow-card: 0 4px 20px -4px rgba(45, 42, 34, 0.08);
+    --shadow-soil: 0 10px 30px -10px rgba(132, 84, 0, 0.18);
+    --shadow-card: 0 4px 20px -4px rgba(132, 84, 0, 0.10);
+    --shadow-amber: 0 0 24px rgba(255, 179, 71, 0.40);
   }
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-family: var(--font-sans);
+    background-color: #fefccf;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(255, 223, 160, 0.35) 0%, transparent 42%),
+      radial-gradient(circle at 90% 80%, rgba(79, 121, 66, 0.12) 0%, transparent 42%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -70,14 +83,41 @@
 }
 
 @layer components {
+  /* Standard glass — white-tinted, for navs/modals */
   .glass-card {
-    @apply bg-white/60 backdrop-blur-xl border border-white/20;
-    box-shadow: var(--shadow-card);
+    background: rgba(255, 250, 235, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), var(--shadow-card);
   }
 
   .glass-card-strong {
-    @apply bg-white/80 backdrop-blur-xl border border-white/30;
-    box-shadow: var(--shadow-soil);
+    background: rgba(255, 252, 240, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), var(--shadow-soil);
+  }
+
+  /* Honey glass — amber-tinted, per DESIGN.md spec */
+  .honey-glass {
+    background: rgba(255, 179, 71, 0.10);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.42);
+  }
+
+  /* Slightly darker inset region inside a card */
+  .tonal-well {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 1rem;
+  }
+
+  /* Glow pulse for live indicators */
+  .amber-glow {
+    box-shadow: var(--shadow-amber);
   }
 
   .data-value {
