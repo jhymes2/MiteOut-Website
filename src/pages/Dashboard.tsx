@@ -3,26 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Hexagon, LogOut, Plus, Thermometer, Droplets, Weight, Upload } from "lucide-react";
+import { Hexagon, LogOut, Plus, Thermometer, Droplets, Weight, Upload, CalendarDays } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import CSVUploader from "@/components/CSVUploader";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [showUploader, setShowUploader] = useState(false);
-  const [newHiveName, setNewHiveName] = useState("");
-  const [newHiveCode, setNewHiveCode] = useState("");
-  const [addingHive, setAddingHive] = useState(false);
 
-  const { data: hives, refetch: refetchHives } = useQuery({
+  const { data: hives } = useQuery({
     queryKey: ["hives", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -65,27 +57,6 @@ const Dashboard = () => {
     return hiveReadings.length > 0 ? hiveReadings[hiveReadings.length - 1] : null;
   };
 
-  const handleAddHive = async () => {
-    if (!user || !newHiveName.trim()) return;
-    setAddingHive(true);
-    try {
-      const { error } = await supabase.from("hives").insert({
-        user_id: user.id,
-        name: newHiveName.trim(),
-        hive_code: newHiveCode.trim() || null,
-      });
-      if (error) throw error;
-      toast({ title: "Hive created", description: `${newHiveName} added to your apiary.` });
-      setNewHiveName("");
-      setNewHiveCode("");
-      refetchHives();
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
-    } finally {
-      setAddingHive(false);
-    }
-  };
-
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
@@ -101,6 +72,15 @@ const Dashboard = () => {
             <span className="font-serif text-lg font-bold tracking-tight">MiteOut</span>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/calendar")}
+              className="gap-1.5"
+            >
+              <CalendarDays className="h-3.5 w-3.5" />
+              Calendar
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -184,31 +164,14 @@ const Dashboard = () => {
         <div>
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-serif text-2xl font-bold tracking-tight">Your hives</h2>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1.5 rounded-xl honey-glass border-white/30 hover:bg-primary/10">
-                  <Plus className="h-4 w-4" /> Add hive
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add a new hive</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 pt-2">
-                  <div>
-                    <Label>Hive name</Label>
-                    <Input value={newHiveName} onChange={(e) => setNewHiveName(e.target.value)} placeholder="e.g., Hive Alpha" className="mt-1" />
-                  </div>
-                  <div>
-                    <Label>Hive code (from logger)</Label>
-                    <Input value={newHiveCode} onChange={(e) => setNewHiveCode(e.target.value)} placeholder="e.g., HIVE_ALPHA" className="mt-1" />
-                  </div>
-                  <Button onClick={handleAddHive} disabled={addingHive || !newHiveName.trim()} className="w-full">
-                    {addingHive ? "Creating..." : "Create hive"}
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 rounded-xl honey-glass border-white/30 hover:bg-primary/10"
+              onClick={() => navigate("/hive/new")}
+            >
+              <Plus className="h-4 w-4" /> Add hive
+            </Button>
           </div>
 
           {(!hives || hives.length === 0) ? (
@@ -217,7 +180,10 @@ const Dashboard = () => {
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
                   <Hexagon className="h-6 w-6 text-primary/50" />
                 </div>
-                <p className="text-muted-foreground text-sm">No hives yet. Add your first hive to get started.</p>
+                <p className="text-muted-foreground text-sm mb-5">No hives yet. Set up your first hive to get started.</p>
+                <Button variant="hero" onClick={() => navigate("/hive/new")}>
+                  Set up your first hive
+                </Button>
               </CardContent>
             </Card>
           ) : (

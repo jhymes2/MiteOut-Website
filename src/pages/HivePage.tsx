@@ -14,6 +14,11 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
 import CSVUploader from "@/components/CSVUploader";
+import HiveSetupPanel, {
+  HiveSetupMeta,
+  parseSetupNotes,
+  buildNotesJson,
+} from "@/components/HiveSetupPanel";
 import { useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,16 +26,19 @@ const HivePage = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { toast } = useToast();
-  const [notes, setNotes] = useState("");
+  const [setupMeta, setSetupMeta] = useState<HiveSetupMeta | null>(null);
+  const [fieldNotes, setFieldNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [showThermistors, setShowThermistors] = useState(false);
 
-  const { data: hive } = useQuery({
+  const { data: hive, refetch: refetchHive } = useQuery({
     queryKey: ["hive", id],
     queryFn: async () => {
       const { data, error } = await supabase.from("hives").select("*").eq("id", id!).single();
       if (error) throw error;
-      if (data.notes) setNotes(data.notes);
+      const { meta, fieldNotes: fn } = parseSetupNotes(data.notes);
+      setSetupMeta(meta);
+      setFieldNotes(fn);
       return data;
     },
     enabled: !!id && !!user,
@@ -68,7 +76,8 @@ const HivePage = () => {
     if (!id) return;
     setSavingNotes(true);
     try {
-      const { error } = await supabase.from("hives").update({ notes }).eq("id", id);
+      const notesStr = buildNotesJson(setupMeta, fieldNotes);
+      const { error } = await supabase.from("hives").update({ notes: notesStr }).eq("id", id);
       if (error) throw error;
       toast({ title: "Notes saved" });
     } catch (err: any) {
@@ -76,6 +85,19 @@ const HivePage = () => {
     } finally {
       setSavingNotes(false);
     }
+  };
+
+  const handleSaveSetup = async (newMeta: HiveSetupMeta, newHiveCode: string | null) => {
+    if (!id) return;
+    const notesStr = buildNotesJson(newMeta, fieldNotes);
+    const { error } = await supabase
+      .from("hives")
+      .update({ notes: notesStr, hive_code: newHiveCode })
+      .eq("id", id);
+    if (error) throw error;
+    setSetupMeta(newMeta);
+    toast({ title: "Setup saved", description: "Hive configuration updated." });
+    refetchHive();
   };
 
   const latest = readings && readings.length > 0 ? readings[readings.length - 1] : null;
@@ -184,6 +206,13 @@ const HivePage = () => {
             <Download className="h-3.5 w-3.5" /> Export PDF
           </Button>
         </div>
+
+        {/* Hive Setup Panel */}
+        <HiveSetupPanel
+          meta={setupMeta}
+          hiveCode={hive?.hive_code ?? null}
+          onSave={handleSaveSetup}
+        />
 
         {/* Temperature & Humidity Trends */}
         <Card>
@@ -431,8 +460,8 @@ const HivePage = () => {
           </CardHeader>
           <CardContent>
             <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              value={fieldNotes}
+              onChange={(e) => setFieldNotes(e.target.value)}
               placeholder="Add observations, inspection notes, queen status..."
               className="min-h-[110px] mb-3 bg-white/30 border-white/30 focus:border-primary/40"
             />
