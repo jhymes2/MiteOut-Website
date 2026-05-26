@@ -560,7 +560,7 @@ const SetupEditForm = ({
           <div>
             <Label className="font-semibold text-sm mb-2 block">Inspection frequency</Label>
             <ChipSelect
-              options={["Weekly", "Biweekly", "Monthly"]}
+              options={["Weekly", "Biweekly", "Monthly", "Bimonthly"]}
               value={form.inspection_frequency ?? ""}
               onChange={(v) => set("inspection_frequency", v as string)}
             />

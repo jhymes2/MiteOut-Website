@@ -11,6 +11,8 @@ import Dashboard from "./pages/Dashboard";
 import HivePage from "./pages/HivePage";
 import HiveSetupPage from "./pages/HiveSetupPage";
 import CalendarPage from "./pages/CalendarPage";
+import ColoniesPage from "./pages/ColoniesPage";
+import UploadPage from "./pages/UploadPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/hive/new" element={<ProtectedRoute><HiveSetupPage /></ProtectedRoute>} />
             <Route path="/hive/:id" element={<ProtectedRoute><HivePage /></ProtectedRoute>} />
             <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+            <Route path="/colonies" element={<ProtectedRoute><ColoniesPage /></ProtectedRoute>} />
+            <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

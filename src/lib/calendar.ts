@@ -319,6 +319,7 @@ export function inspFreqDays(freq: string | null | undefined): number | null {
   if (freq === "Weekly") return 7;
   if (freq === "Biweekly") return 14;
   if (freq === "Monthly") return 30;
+  if (freq === "Bimonthly") return 61;
   return null;
 }
 
