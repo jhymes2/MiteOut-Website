@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import AppSidebar from "@/components/AppSidebar";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Plus,
@@ -21,8 +21,6 @@ import {
   CheckCircle2,
   Clock,
   MapPin,
-  Hexagon,
-  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -929,7 +927,7 @@ function LocationBanner({
 // ─── Main CalendarPage ────────────────────────────────────────────
 
 const CalendarPage: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [view, setView] = useState<CalendarView>("month");
@@ -1066,51 +1064,39 @@ const CalendarPage: React.FC = () => {
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-[100dvh]">
-      {/* Nav */}
-      <nav className="glass-card-strong border-b border-white/20 sticky top-0 z-40">
-        <div className="container mx-auto flex items-center justify-between h-16 px-6">
-          <div className="flex items-center gap-3">
-            <Link to="/dashboard">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <Hexagon className="h-5 w-5 text-primary fill-primary/20" />
-              <span className="font-serif text-lg font-bold tracking-tight">Calendar</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => openSheet({ defaultDate: todayYMD() })}
-              className="gap-1.5 honey-glass border-white/30 hover:bg-primary/10 rounded-xl"
-            >
-              <Plus className="h-4 w-4" /> Add event
-            </Button>
-            {!showSuggestions && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowSuggestions(true)}
-                className="gap-1.5"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Suggestions</span>
-                {suggestions.filter((s) => !dismissedSuggestionIds.has(s.id)).length > 0 && (
-                  <span className="data-value text-[10px] bg-primary/15 text-primary px-1.5 rounded-full">
-                    {suggestions.filter((s) => !dismissedSuggestionIds.has(s.id)).length}
-                  </span>
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
-      </nav>
+    <div className="flex h-screen overflow-hidden" style={{ background: "#fefccf" }}>
+      <AppSidebar />
 
-      <div className="container mx-auto px-4 md:px-6 py-5 space-y-4">
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      {/* Top action bar */}
+      <div className="flex items-center justify-end gap-2 px-6 h-14 border-b border-amber-200/60 bg-white/40 backdrop-blur-sm flex-shrink-0">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => openSheet({ defaultDate: todayYMD() })}
+          className="gap-1.5 honey-glass border-white/30 hover:bg-primary/10 rounded-xl"
+        >
+          <Plus className="h-4 w-4" /> Add event
+        </Button>
+        {!showSuggestions && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSuggestions(true)}
+            className="gap-1.5"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Suggestions</span>
+            {suggestions.filter((s) => !dismissedSuggestionIds.has(s.id)).length > 0 && (
+              <span className="data-value text-[10px] bg-primary/15 text-primary px-1.5 rounded-full">
+                {suggestions.filter((s) => !dismissedSuggestionIds.has(s.id)).length}
+              </span>
+            )}
+          </Button>
+        )}
+      </div>
+
+      <div className="px-4 md:px-6 py-5 space-y-4">
         {/* Location banner */}
         {prompted && !coords && (
           <LocationBanner onRequest={requestLocation} />
@@ -1294,6 +1280,7 @@ const CalendarPage: React.FC = () => {
         onSave={handleSave}
         onDelete={handleDelete}
       />
+      </main>
     </div>
   );
 };
